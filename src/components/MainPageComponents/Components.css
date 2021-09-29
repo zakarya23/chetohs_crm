@@ -1,0 +1,128 @@
+* {
+	font-family: "Open Sans", sans-serif;
+}
+
+.topbar {
+	height: 56px;
+	width: "100%";
+}
+
+.searchbar {
+	height: 41px;
+	width: 1104px;
+	display: inline;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.p {
+	text-align: center;
+	vertical-align: top;
+	font-size: 20px;
+	letter-spacing: 10%;
+	line-height: auto;
+	color: #000;
+}
+
+.createContact {
+	padding-left: 43px;
+}
+
+.searchbar {
+	width: 1104px;
+	height: 41px;
+	display: flex;
+	justify-content: space-between;
+	padding-left: 330px;
+}
+
+.line3 {
+	height: 56px;
+	width: 1395px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.titles {
+	height: 42.35px;
+	width: 1091px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding-left: 80px;
+}
+
+.client {
+	height: 55px;
+	width: 937.25px;
+	font-size: 20px;
+	display: flex;
+	border: none;
+	justify-content: space-between;
+	padding-left: 80px;
+	background: transparent;
+}
+
+.name {
+	position: absolute;
+}
+
+.status {
+	position: absolute;
+	left: 690px;
+}
+
+.progress {
+	position: absolute;
+	left: 1025px;
+}
+
+.lowerpart {
+	display: flex;
+}
+
+.sidebar {
+	width: 300px;
+	height: 800px;
+	border: 0px solid;
+	display: inline-block;
+}
+
+.total {
+	text-align: center;
+	color: grey;
+}
+
+hr {
+	border: 1px solid lightgrey;
+}
+
+.filterBar {
+	padding-left: 30px;
+}
+
+.timestamp {
+	font-weight: bold;
+}
+
+.divider {
+	height: 24px;
+	width: 287px;
+}
+
+.line {
+	position: relative;
+	top: 20px;
+	height: 0px;
+	width: 287px;
+	border: 1px solid #e0e0e0;
+}
+
+.notifications {
+	flex-direction: row;
+	justify-content: flex-start;
+	align-items: center;
+	padding: 4px 12px;
+	gap: 8px;
+}

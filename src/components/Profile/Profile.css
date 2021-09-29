@@ -1,0 +1,68 @@
+.rectangle {
+    width: 100%;
+    height: 12.5em;
+    background-color: #814B4B;
+    position: relative;
+   
+}
+
+.leftContainer {
+    height: 100%;
+    width: 25%;
+    background-color: yellow;
+    position: absolute;
+    top:10%; 
+    display: flex;
+    flex-direction: column;
+    margin-left: 10%;
+}
+
+.topBar {
+    height: 4.5em;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.infoContainer {
+    height: 10%;
+    width: 10%;
+    margin-right: 17%;
+    padding: 1%;    
+}
+
+.generalBox {
+    height: 10%;
+    width: 25%;
+    padding: 1%;
+    margin: 1%;
+    box-shadow: 0 0 5px #0005;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    /* justify-content: flex-end; */
+}
+
+.editRow {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.editBox {
+    height: 3em;
+    width: 3em;
+    box-shadow: 0 0 5px #0005;
+}
+
+.contactInfo {
+    color: #814B4B;
+}
+
+.rightContainer {
+    width: 100%;
+    height: 100%;
+    margin-left: 38%;
+}

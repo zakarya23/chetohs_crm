@@ -1,0 +1,28 @@
+.boxes {
+    display: flex;
+    flex-direction: row;
+    height: 10%;
+    width: 100%;
+    justify-content: center;
+    /* padding: 10px; */
+}
+
+.clientHeading {
+    position: relative;
+    left: 42%;
+    margin-top: 100px;
+    color: #814B4B;
+}
+
+.add-contact {
+    position: relative;
+    top: 10px;
+    left: 60%;
+    margin-bottom: 100px;
+}
+
+/* .box {
+    width: 20px;
+    background-color: yellow;
+    height: 100%;
+} */

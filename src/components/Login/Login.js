@@ -16,7 +16,6 @@ const API_URL = "https://chetohs-crm-backend.herokuapp.com/";
 
 async function loginUser(credentials) {
     return fetch(API_URL + "login/", {
-      mode: 'no-cors',
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

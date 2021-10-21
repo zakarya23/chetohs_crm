@@ -1,44 +1,48 @@
-//////////////////////////////
-// Author(s): Nicholas, Zakarya Butt, Rebecca
+////////////////////////////////////////////////////////////
+// Author(s): Nicholas, Zakarya Butt, Rebecca Ye
 // Date Made: 08/09/2021
-//////////////////////////////
+////////////////////////////////////////////////////////////
 
-import React, { useState } from 'react';
-import {BrowserRouter as Router, BrowserRouter, Route, Switch } from 'react-router-dom';
+import React  from 'react';
+import {BrowserRouter, Route, Switch } from 'react-router-dom';
 
 import './App.css';
 import UserHome from '../User/UserHome';
 import Login from '../Login/Login';
-import Register from '../Register/Register';
 import useToken from './useToken';
 import Profile from '../Profile/Profile'; 
 import EditInfo from '../Edit/EditInfo';
-import EditPw from '../Edit/EditPw'
 import AddContact from '../MainPageComponents/AddContact'; 
+import { ThemeProvider } from '@material-ui/core/styles';
+import theme from './Theme';
 
 function App() {
-    const { token, setToken } = useToken();
-    // const {isAuth, setIsAuth} = useState(true); 
 
+    const { token, setToken } = useToken(); 
+    
     if(!token) {
-        return <Login setToken={setToken} />
+        return (
+            <ThemeProvider theme={theme}>
+                <Login setToken={setToken} />
+            </ThemeProvider>
+        )
     }
 
     return (
-        <BrowserRouter>
-            <Switch>
-                {/* User Home Page Route */}
-                <Route exact path="/" component={UserHome}/>
-                {/* User Profile Route */}
-                <Route path="/profile/:id" component={Profile}/>
-                {/* Edit user information */}
-                <Route path="/edit_information" component={EditInfo}/>
-                {/* Edit user pw */}
-                <Route path="/edit_password" component={EditPw}/>
-                {/* Add Contact Route  */}
-                <Route path="/addContact" component={AddContact}/>
-            </Switch>
-        </BrowserRouter>
+        <ThemeProvider theme={theme}>
+            <BrowserRouter>
+                <Switch>
+                    {/* User Home Page Route */}
+                    <Route exact path="/" component={UserHome}/>
+                    {/* User Profile Route */}
+                    <Route exact path="/user/profile/:id" component={Profile}/>
+                    {/* Edit user information */}
+                    <Route path="/edit_information" component={EditInfo}/>
+                    {/* Add Contact Route  */}
+                    <Route path="/addContact" component={AddContact}/>
+                </Switch>
+            </BrowserRouter>
+        </ThemeProvider>
     );
 }
 

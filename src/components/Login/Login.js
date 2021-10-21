@@ -1,35 +1,35 @@
-//////////////////////////////
-// Author(s): Zakarya Butt, Nicholas, Rebecca
+////////////////////////////////////////////////////////////
+// Author(s): Zakarya Butt, Nicholas, Rebecca Ye
 // Date Made: 07/09/2021
-//////////////////////////////
+////////////////////////////////////////////////////////////
+
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import './Login.css'; 
-import Auth from '../Authentication/Auth';
-import {useHistory} from 'react-router-dom';
 import TextField from '@material-ui/core/TextField';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
+import AlertMessage from '../AlertMessage/AlertMessage';
 
-const API_URL = "https://chetohs-crm-backend.herokuapp.com/";
+const config = require('../Configuration/config.json');
+const API_URL =  config.API_URL; 
 
 async function loginUser(credentials) {
     return fetch(API_URL + "login/", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(credentials)
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(credentials)
     })
-      .then(data => data.json())
+    .then(data => data.json())
 }
 
 export default function Login({ setToken }) {
     const [username, setUserName] = useState();
     const [password, setPassword] = useState();
-    let history = useHistory(); 
-
+    const [loginStatus, setLoginStatus] = useState();
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
         // Fetch sends the username and password 
@@ -39,19 +39,22 @@ export default function Login({ setToken }) {
             username,
             password
         })
-
-        setToken(res);
+        if (res.status === 401 || res.status === 403) {
+            setLoginStatus({ msg: "Incorrect login details.", key: Math.random(), severity: "error" });
+        }
+        else {
+            setToken(res);
+            setLoginStatus({ msg: "Login successful.", key: Math.random(), severity: "success" });
+            window.location.href = "/";
+        }
     }
 
-    const register = async (e) => {
-        e.preventDefault();
-        history.push('/register');
-    }
 
     return(
         <section className="login-wrapper">
             <img src="/logo.png" alt="logo" width="207" height="55"/>
             <form onSubmit={handleSubmit}>
+            {loginStatus ? <AlertMessage key={loginStatus.key} message={loginStatus.msg} severity={loginStatus.severity} /> : null}
             <br/>
 
             {/* need to change colour/set up theme */}
@@ -118,10 +121,6 @@ export default function Login({ setToken }) {
             </section>
             <br/>
             </form>
-            {/*
-            <section class="register">
-                <button type="register" onClick={register}>Register</button>
-            </section>*/}
         </section>
         )
 }

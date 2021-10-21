@@ -1,24 +1,30 @@
 .boxes {
     display: flex;
-    flex-direction: row;
+    flex-direction: horizontal;
     height: 10%;
     width: 100%;
     justify-content: center;
+    position: relative;
     /* padding: 10px; */
 }
 
 .clientHeading {
     position: relative;
-    left: 42%;
-    margin-top: 100px;
-    color: #814B4B;
+    font-family: 'Times New Roman', Times, serif;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.client-info {
+    margin-right: 5%;
 }
 
 .add-contact {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
     position: relative;
-    top: 10px;
-    left: 60%;
-    margin-bottom: 100px;
 }
 
 /* .box {

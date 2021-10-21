@@ -6,6 +6,8 @@ import React, { useState } from 'react';
 import './Register.css'; 
 import {useHistory} from 'react-router-dom';
 import TextField from '@material-ui/core/TextField';
+const config = require('../Configuration/config.json');
+const API_URL =  config.API_URL; 
 
 export default function Register() {
     const [familyname, setFamilyName] = useState();
@@ -22,7 +24,7 @@ export default function Register() {
         // Fetch sends credentials which is username and password 
         // to the back end which validates against the db and then 
         // returns a response. 
-        var res = await fetch('https://chetohs-crm-backend.herokuapp.com/register', {
+        var res = await fetch(API_URL + 'register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

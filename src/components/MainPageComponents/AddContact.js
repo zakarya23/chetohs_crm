@@ -1,17 +1,33 @@
-//////////////////////////////
-// Author(s): Zakarya Butt
+////////////////////////////////////////////////////////////
+// Author(s): Zakarya Butt, Rebecca Ye, Nicholas Ang
 // Date Made: 26/09/2021
-//////////////////////////////
+////////////////////////////////////////////////////////////
 
-import Topbar from '../MainPageComponents/Topbar';
 import TextField from '@material-ui/core/TextField';
 import Box from '@material-ui/core/Box';
 import './AddContact.css'; 
 import Button from '@material-ui/core/Button';
-import React, { useState ,useEffect} from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
+import BackButton from '@material-ui/icons/ArrowBack'; 
+import { IconButton, AppBar, Toolbar } from '@material-ui/core';
+
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+import AlertMessage from '../AlertMessage/AlertMessage';
+
+const config = require('../Configuration/config.json');
+const API_URL =  config.API_URL; 
 
 export default function EditInfo() {
+
+    const homepage = async (e) => {
+        e.preventDefault();
+        window.location.href = '/';
+    }
+    
     // Client information
     const [firstName, setFirst] = useState(); 
     const [familyName, setFamily] = useState(); 
@@ -28,40 +44,54 @@ export default function EditInfo() {
     const [priority, setPriority] = useState(); 
     const [status, setStatus] = useState(); 
 
+    const [addClientStatus, setAddClientStatus] = useState();
 
     const makeCustomer = () => {
+        // Phone number 10
         // Sends a request to the backend to make a new customer
+        var clientFields =  firstName || familyName || dob || gender || number || email || priority || status || companyName || location | position | department; 
+
         var req = {
             client : {"firstName":firstName, "familyName": familyName, "dob": dob, "gender":gender, "number":number, "email":email}, 
             company : {"name":companyName, "location":location, "position":position, "department":department, "priority": priority, "status": status}
         }
-        console.log(req);
-        axios.post('https://chetohs-crm-backend.herokuapp.com/user/addCustomer', req).then(res => {
-            var data = res.data.customers; 
-            console.log(data); 
-        }) 
-      }
+
+        if (!clientFields) {
+            setAddClientStatus({ msg: "Please fill in all fields!", key: Math.random(), severity: 'warning' });
+        }
+        else {
+            axios.post(API_URL + 'user/addCustomer', req).then(res => {
+                setAddClientStatus({ msg: "Client successfully added.", key: Math.random(), severity: "success" });
+            })
+        }
+    }
   
-
-
 
     return (
         <>
-            <Topbar />
-            <h1 className="clientHeading">Create Client</h1>
+            <section className="topBar">
+                <AppBar position="Fixed" color="white" boxShadow={4}>
+                    <Toolbar>
+                        <Box 
+                            flexGrow={0.95}>
+                            <IconButton edge="start" marginLeft="auto">
+                                <BackButton
+                                    onClick={homepage}>
+                                </BackButton>    
+                            </IconButton>
+                        </Box>
+                        <Box flexGrow={1}>
+                            <img class="header" src="/logo.png" alt="logo" width="207" height="55" />
+                        </Box>
+                    </Toolbar>
+                </AppBar>
+            </section>
+            <h1 className="clientHeading">Add Contact</h1>
+            
             <section className="boxes">
-                <Box
-                borderRadius={16}
-                width={300}
-                height={600}
-                boxShadow={0}
-                paddingLeft={5}
-                paddingRight={5}
-                
-                >
                     <br/>
+                    <section className="client-info">
                     <h4>Client Information</h4>
-                    <section className="">
                         <TextField
                             required
                             id="firstname"
@@ -79,7 +109,6 @@ export default function EditInfo() {
                             required
                             id="familyName"
                             label="Family Name"
-                            // type="password"
                             placeholder="e.g. Doe"
                             variant="outlined"
                             color="secondary"
@@ -140,21 +169,10 @@ export default function EditInfo() {
                             onChange={e => setEmail(e.target.value)}
                         />
                     </section> 
-    
-                </Box>
 
-                <Box
-                borderRadius={16}
-                width={300}
-                height={600}
-                boxShadow={0}
-                paddingLeft={5}
-                paddingRight={5}
-                
-                >
                     <br/>
+                    <section className="company-info">
                     <h4>Company Information</h4>
-                    <section className="">
                         <TextField
                             required
                             id="companyName"
@@ -208,33 +226,43 @@ export default function EditInfo() {
                         />
                         <br/>
                         <br/>
-                        <TextField
-                            required
-                            id="priority"
-                            label="Priority"
-                            placeholder="High, Medium or Low"
-                            variant="outlined"
-                            color="secondary"
-                            height="56px"
-                            width="232px"
-                            onChange={e => setPriority(e.target.value)}
-                        />
+                        <Box sx={{ width: 200 }}>
+                            <FormControl fullWidth>
+                                <InputLabel id="priority">Priority</InputLabel>
+                                <Select
+                                labelId="priority"
+                                id="priority"
+                                label="Priority"
+                                onChange={e => setPriority(e.target.value)}
+                                >
+                                <MenuItem value={"Low"}>Low</MenuItem>
+                                <MenuItem value={"Medium"}>Medium</MenuItem>
+                                <MenuItem value={"High"}>High</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Box>
                         <br/>
                         <br/>
-                        <TextField
-                            required
-                            id="status"
-                            label="Status"
-                            placeholder="e.g. New"
-                            variant="outlined"
-                            color="secondary"
-                            height="56px"
-                            width="232px"
-                            onChange={e => setStatus(e.target.value)}
-                        />
+                        <Box sx={{ width: 200 }}>
+                            <FormControl fullWidth>
+                                <InputLabel id="progress">Progress</InputLabel>
+                                <Select
+                                labelId="progress"
+                                id="progress"
+                                label="Progress"
+                                onChange={e => setStatus(e.target.value)}
+                                >
+                                <MenuItem value={"New"}>New</MenuItem>
+                                <MenuItem value={"Invited"}>Invited</MenuItem>
+                                <MenuItem value={"Met"}>Met</MenuItem>
+                                <MenuItem value={"Negotiation"}>Negotiation</MenuItem>
+                                <MenuItem value={"Conclude"}>Conclude</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Box>
+                        <br/>
+                        <br/>
                     </section> 
-    
-                </Box>
 
                 
             </section>
@@ -245,9 +273,10 @@ export default function EditInfo() {
                     type="submit"
                     variant="contained"
                     color="secondary"
-                    style={{minWidth: "85px", minHeight:"35px"}}>
+                    style={{minWidth: "85px", maxWidth: "150px", minHeight:"35px"}}>
                     Add Contact
                 </Button>
+                {addClientStatus ? <AlertMessage key={addClientStatus.key} message={addClientStatus.msg} severity={addClientStatus.severity} /> : null}
             </section>
         </>
     )

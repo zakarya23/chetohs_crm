@@ -1,34 +1,32 @@
-* {
-    font-family: "Open Sans", sans-serif;
+.topBar {
+    height: 4.5em;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
-img {
-    margin-top: 5px;
-}
-
-.editInfo-wrapper {
+.editInfo{
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-.credentials {
-    position: relative;
-    top: 110px;
-    left: 75px;
+.editPw{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.submission {
-    position: relative;
-    top: 155px;
-    left: 143px;
+.editInfo-header {
+    font-size: x-large;
 }
 
-.headerBox {
-    /* makes it overlap on top */
-    z-index: 1;
+h3 {
+    color: black;
+    font-family: 'Times New Roman', Times, serif;
 }
 
-h2 {
-    color: white;
+h1 {
+    color: black;
+    font-family: "Open Sans", sans-serif;
 }

@@ -1,89 +1,97 @@
 .rectangle {
-  width: 100%;
-  height: 15vw;
-  background-color: #814b4b;
-  position: absolute;
-  z-index: -1;
+	width: 100%;
+	height: 16vw;
+	background-color: #814b4b;
+	position: absolute;
+	z-index: -1;
+}
+
+.company-task {
+	display: flex;
+	flex-direction: vertical;
 }
 
 .leftContainer {
-  height: 100%;
-  width: 35%;
-  position: relative;
-  top: 5vw;
-  display: flex;
-  flex-direction: column;
+	height: 100%;
+	width: 35%;
+	position: relative;
+	top: 5vw;
+	display: flex;
+	flex-direction: column;
+}
+
+.top-wrapper {
+	display: flex;
 }
 
 .topBar {
-  height: 4.5em;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+	height: 4.5em;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
 }
 
 .infoContainer {
-  height: auto;
-  width: auto;
-  margin-right: 17%;
-  padding: 1%;
+	height: auto;
+	padding: 1%;
+	display: inline;
 }
 
 .generalBox {
-  height: auto;
-  width: auto;
+	height: auto;
+	width: auto;
 
-  padding: 1%;
-  margin: 1%;
-  box-shadow: 0 0 5px #0005;
+	padding: 1%;
+	margin: 1%;
+	box-shadow: 0 0 5px #0005;
 }
 
 .row {
-  display: flex;
-  flex-direction: row;
-  /* justify-content: flex-end; */
+	display: flex;
+	flex-direction: row;
+	/* justify-content: flex-end; */
 }
 
 .editRow {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
 }
 
 .editBox {
-  height: 3em;
-  width: 3em;
-  box-shadow: 0 0 5px #0005;
+	height: 3em;
+	width: 3em;
+	box-shadow: 0 0 5px #0005;
 }
 
 .contactInfo {
-  color: #814b4b;
+	color: #814b4b;
 }
 
 .container {
-  position: relative;
-  display: flex;
+	position: relative;
+	display: flex;
 }
 
 .rightContainer {
-  width: 65%;
-  height: 100%;
-  top: 14vw;
-  position: relative;
+	width: 65%;
+	height: 100%;
+	top: 15vw;
+	position: relative;
 }
 
 .profilePicContainer {
-  height: 100%;
-  width: auto;
-  border-radius: 50%;
+	height: 100%;
+	width: auto;
+	border-radius: 50%;
 }
 
 .avatar {
-  position: relative;
-  border: 50%;
-  height: auto;
-  width: 50%;
-  display: flex;
-  left: 7vw;
-  padding: 2vw;
+	position: relative;
+	border: 50%;
+	height: auto;
+	width: 50%;
+	display: flex;
+	left: 7vw;
+	padding: 2vw;
 }

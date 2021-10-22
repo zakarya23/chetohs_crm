@@ -11,9 +11,7 @@ import { IconButton, AppBar, Toolbar, Box } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState, Fragment } from 'react';
-import Moment from 'react-moment';
-import Calendar from 'react-calendar'
-// import 'moment-timezone';
+
 import 'reactjs-popup/dist/index.css';
 import Popup from 'reactjs-popup';
 import 'react-calendar/dist/Calendar.css';
@@ -24,23 +22,84 @@ import InputLabel from '@material-ui/core/InputLabel';
 import OutlinedInput from '@material-ui/core/OutlinedInput';
 import Select from '@material-ui/core/Select';
 
-
-
 import DateFnsUtils from '@date-io/date-fns';
 import {
     MuiPickersUtilsProvider,
-    KeyboardDateTimePicker
+    KeyboardDateTimePicker,
+    KeyboardDatePicker
 } from '@material-ui/pickers';
 
+import Button from '@material-ui/core/Button';
+
 import Avatar from "./pngegg.png";
+
+async function changeContact(link, id, phoneNumber, email) {
+    var req = {"phoneNumber": phoneNumber,
+                "email": email };
+    try {
+        axios.post(link + 'user/changeContact/' + id, req);
+    }
+    catch (err) {
+        if ((err)) return alert('check your connection');
+        throw err;
+    }
+}
+
+async function changeCompanyInfo(link, id, name, location, position, department) {
+    var req = {"name": name,
+               "location": location,
+               "position": position,
+               "department": department };
+    try {
+        axios.post(link + 'user/changeCompInfo/' + id, req);
+    }
+    catch (err) {
+        if ((err)) return alert('check your connection');
+        throw err;
+    }
+}
+
+async function changeTaskInfo(link, id, desc, timeline) {
+    var req = {"description": desc,
+               "timeline": timeline };
+    try {
+        axios.post(link + 'user/changeTaskInfo/' + id, req);
+    }
+    catch (err) {
+        if ((err)) return alert('check your connection');
+        throw err;
+    }
+}
+
+async function changeNotes(link, id, notes) {
+    var req = {"notes": notes }
+    try {
+        axios.post(link + 'user/changeNotes/' + id, req);
+    }
+    catch (err) {
+        if ((err)) return alert('check your connection');
+        throw err;
+    }
+}
+
+async function changePersonalDetails(link, id, firstName, familyName, dob) {
+    var req = {"firstName": firstName,
+               "familyName": familyName,
+               "dob": dob };
+    try {
+        axios.post(link + 'user/changePersonalDetails/' + id, req);
+    }
+    catch (err) {
+        if ((err)) return alert('check your connection');
+        throw err;
+    }
+}
 
 export default function Profile({props}) {
     const config = require('../Configuration/config.json');
     const link =  config.API_URL; 
     var [customer, setCustomer] = useState(); 
     var [company, setCompany] = useState(); 
-    var [progress, setProgress] = useState();
-    var [priority, setPriority] = useState();
     
     var [notes, setNotes] = useState();
     var [number, setNumber] = useState();
@@ -52,10 +111,31 @@ export default function Profile({props}) {
     var [department, setDepartment] = useState();
     var [description, setDescription] = useState();
     var [timeline, setTimeline] = useState();
+
+    var [pnotes, setpNotes] = useState();
+    var [pnumber, setpNumber] = useState();
+    var [pemail, setpEmail] = useState();
+    var [dob, setDob] = useState(new Date());
+    
+    var [firstName, setFirstName] = useState();
+    var [familyName, setFamilyName] = useState();
+    var [pfirstName, setpFirstName] = useState();
+    var [pfamilyName, setpFamilyName] = useState();
+    var [gender, setGender] = useState();
+
+    var [pname, setpName] = useState();
+    var [plocation, setpLocation] = useState();
+    var [pposition, setpPosition] = useState();
+    var [pdepartment, setpDepartment] = useState();
+    var [pdescription, setpDescription] = useState();
+    var [ptimeline, setpTimeline] = useState();
     let {id} = useParams();
 
-    const [lastContact, setLastContact] = useState(new Date());
-    const [nextMeeting, setNextMeeting] = useState(new Date());
+    var [progress, setProgress] = useState();
+    var [priority, setPriority] = useState();
+
+    var [lastContact, setLastContact] = useState(new Date());
+    var [nextMeeting, setNextMeeting] = useState(new Date());
 
     const homepage = async (e) => {
         e.preventDefault();
@@ -72,12 +152,36 @@ export default function Profile({props}) {
                     var data = res.data; 
                     var cust = data.customer; 
                     var comp = data.company; 
-                    var prog = cust.progress;
-                    var priority = cust.priority;
                     setCustomer(cust); 
-                    setCompany(comp); 
-                    setProgress(prog);
-                    setPriority(priority);
+                    setCompany(comp);
+                    setProgress(cust.progress);
+                    setPriority(cust.priority);
+                    setLastContact(cust.lastContact);
+                    setNextMeeting(cust.meeting);
+                    setNotes(cust.notes);
+                    setpNotes(cust.notes);
+                    setDescription(cust.description);
+                    setpDescription(cust.description);
+                    setNumber(cust.phoneNumber);
+                    setpNumber(cust.phoneNumber);
+                    setEmail(cust.email);
+                    setpEmail(cust.email);
+                    setTimeline(cust.timeline);
+                    setpTimeline(cust.timeline);
+                    setName(comp.name);
+                    setpName(comp.name);
+                    setLocation(comp.location);
+                    setpLocation(comp.location);
+                    setPosition(comp.position);
+                    setpPosition(comp.position);
+                    setDepartment(comp.department);
+                    setpDepartment(comp.department);
+                    setDob(cust.dob);
+                    setFirstName(cust.firstName);
+                    setpFirstName(cust.firstName);
+                    setFamilyName(cust.familyName);
+                    setpFamilyName(cust.familyName);
+                    setGender(cust.gender);
                 })
             }
             catch (err) {
@@ -88,109 +192,76 @@ export default function Profile({props}) {
         }
 
         getCustomer();  
-    })
+    }, [])
 
-    useEffect( ()=> { 
-        if (notes) {
-            try {
-                var req = {"notes":notes}; 
-                axios.post(link + 'user/notes/' + id, req); 
-            }
-            catch (err) {
-                if ((err)) return alert('check your connection');
-                throw err;
-            }
-        }
-        if (description) {
-            try {
-                var req = {"description":description}; 
-                axios.post(link + 'user/description/' + id, req); 
-            }
-            catch (err) {
-                if ((err)) return alert('check your connection');
-                throw err;
-            }
-        }
-        if (timeline) {
-            try {
-                var req = {"timeline":timeline}; 
-                axios.post(link + 'user/timeline/' + id, req); 
-            }
-            catch (err) {
-                if ((err)) return alert('check your connection');
-                throw err;
-            }
-        }
-        if (number) {
-            try {
-                var req = {"number":number}; 
-                axios.post(link + 'user/number/' + id, req); 
-            }
-            catch (err) {
-                if ((err)) return alert('check your connection');
-                throw err;
-            }
-        }
-        if (email) {
-            try {
-                var req = {"email":email}; 
-                axios.post(link + 'user/email/' + id, req); 
-            }
-            catch (err) {
-                if ((err)) return alert('check your connection');
-                throw err;
-            }
-        }
-        if (name) {
-            try {
-                var req = {"name":name}; 
-                axios.post(link + 'user/name/' + id, req); 
-            }
-            catch (err) {
-                if ((err)) return alert('check your connection');
-                throw err;
-            }
-        }
-        if (location) {
-            try {
-                var req = {"location":location}; 
-                axios.post(link + 'user/location/' + id, req); 
-            }
-            catch (err) {
-                if ((err)) return alert('check your connection');
-                throw err;
-            }
-        }
-        if (position) {
-            try {
-                var req = {"position":position}; 
-                axios.post(link + 'user/position/' + id, req); 
-            }
-            catch (err) {
-                if ((err)) return alert('check your connection');
-                throw err;
-            }
-        }
-        if (department) {
-            try {
-                var req = {"department":department}; 
-                axios.post(link + 'user/department/' + id, req); 
-            }
-            catch (err) {
-                if ((err)) return alert('check your connection');
-                throw err;
-            }
-        }
-        
+    const submitContact = async (e) => {
+        e.preventDefault();
+        const res = await changeContact(
+            link,
+            id,
+            number,
+            email
+        )
+        setpNumber(number);
+        setpEmail(email);
+    }
 
-    }, [notes, description, timeline, number, email, name, location, position, department]); 
+    const submitCompInfo = async (e) => {
+        e.preventDefault();
+        const res = await changeCompanyInfo(
+            link,
+            id,
+            name,
+            location,
+            position,
+            department  
+        )
+        setpName(name);
+        setpLocation(location);
+        setpPosition(position);
+        setpDepartment(department);
+    }
+
+    const submitTaskInfo = async (e) => {
+        e.preventDefault();
+        const res = await changeTaskInfo(
+            link,
+            id,
+            description,
+            timeline
+        )
+        setpDescription(description);
+        setpTimeline(timeline);
+    }
+
+    const submitNotes = async (e) => {
+        e.preventDefault();
+        const res = await changeNotes(
+            link,
+            id,
+            notes
+        )
+        setpNotes(notes);
+    }
+
+    const submitPersonalDetails = async (e) => {
+        e.preventDefault();
+        const res = await changePersonalDetails(
+            link,
+            id,
+            firstName,
+            familyName
+        )
+        setpFirstName(firstName);
+        setpFamilyName(familyName);
+    }
 
 
-    async function changeProgress(progress) {
-        var req = {"progress": progress}
-        setProgress(progress);
+    async function changeProgress(prog) {
+        var req = {"progress": prog}
         try {
-            axios.post(link + 'user/progress/' + id, req)
+            axios.post(link + 'user/progress/' + id, req);
+            setProgress(prog)
         }
         catch (err) {
             if ((err)) return alert('check your connection');
@@ -198,11 +269,11 @@ export default function Profile({props}) {
         }
     }
 
-    async function changePriority(priority) {
-        var req = {"priority": priority}
-        setPriority(priority);
+    async function changePriority(prio) {
+        var req = {"priority": prio}
         try {
-            axios.post(link + 'user/priority/' + id, req)
+            axios.post(link + 'user/priority/' + id, req);
+            setPriority(prio);
         }
         catch (err) {
             if ((err)) return alert('check your connection');
@@ -212,9 +283,9 @@ export default function Profile({props}) {
 
     async function changeLastContact(lcDate) {
         var req = {"lastContact": lcDate}
-        setLastContact(lcDate);
         try {
             axios.post(link + 'user/lastContact/' + id, req)
+            setLastContact(lcDate);
         }
         catch (err) {
             if ((err)) return alert('check your connection');
@@ -224,9 +295,21 @@ export default function Profile({props}) {
 
     async function changeNextMeeting(nmDate) {
         var req = {"meeting": nmDate}
-        setNextMeeting(nmDate);
         try {
             axios.post(link + 'user/meeting/' + id, req)
+            setNextMeeting(nmDate);
+        }
+        catch (err) {
+            if ((err)) return alert('check your connection');
+            throw err;
+        }
+    }
+
+    async function changeDOB(newDob) {
+        var req = {"dob": newDob}
+        try {
+            axios.post(link + 'user/dob/' + id, req)
+            setDob(newDob);
         }
         catch (err) {
             if ((err)) return alert('check your connection');
@@ -273,7 +356,7 @@ export default function Profile({props}) {
                     <br/>
                     <Select
                         native
-                        defaultValue={customer && customer.progress}
+                        value={progress}
                         onChange={event => changeProgress(event.target.value)}
                         style={{width:130}}
                         input={
@@ -300,7 +383,7 @@ export default function Profile({props}) {
                     <br/>
                     <Select
                         native
-                        defaultValue={customer && customer.priority}
+                        value={priority}
                         onChange={event => changePriority(event.target.value)}
                         style={{width:130}}
                         input={
@@ -331,8 +414,8 @@ export default function Profile({props}) {
                                 ampm={false}
                                 label="Last Contact"
                                 inputVariant="outlined"
-                                value={customer && customer.lastContact}
-                                onChange={e => changeLastContact(e)}
+                                value={lastContact}
+                                onChange={changeLastContact}
                                 format="dd/MM/yyyy hh:mm"
                                 />
                             </MuiPickersUtilsProvider>
@@ -351,8 +434,8 @@ export default function Profile({props}) {
                                 ampm={false}
                                 label="Next Meeting"
                                 inputVariant="outlined"
-                                value={customer && customer.meeting}
-                                onChange={e => changeNextMeeting(e)}
+                                value={nextMeeting}
+                                onChange={changeNextMeeting}
                                 format="dd/MM/yyyy hh:mm"
                                 />
                             </MuiPickersUtilsProvider>
@@ -363,179 +446,253 @@ export default function Profile({props}) {
             </div>
 
             <div className="rightContainer">
-                <Grid container
-                    direction="row"
-                    // justifyContent=""
-                    alignItems="center"
-                >
-                    <div className="infoContainer">
-                        {customer  && 
+                <div style = {{padding: "15px", margin: "8px"}}>
+                    <div className="top-wrapper">
+                        <div className="infoContainer">
                             <>
-                            <h1>{customer.firstName} {customer.familyName}</h1>
-                            <p><b>Gender: </b> {customer.gender}</p>
+                            <Box display="flex" justifyContent="space-between">
+                                <h1>{pfirstName} {pfamilyName}</h1>
+                                <Popup trigger={<IconButton><Pen /></IconButton>} position="bottom center">
+                                <div>
+                                    <form onSubmit={submitPersonalDetails}>
+                                        <p>Edit First Name</p>
+                                        <TextField
+                                            id="newnotes"
+                                            label="First Name"
+                                            variant="outlined"
+                                            color="secondary"
+                                            fullWidth 
+                                            onChange={e => setFirstName(e.target.value)}
+                                        />
+                                        <p>Edit Family Name</p>
+                                        <TextField
+                                            id="newnotes"
+                                            label="Family Name"
+                                            variant="outlined"
+                                            color="secondary"
+                                            fullWidth 
+                                            onChange={e => setFamilyName(e.target.value)}
+                                        />
+                                        <br/>
+                                        <br/>
+                                        <section className="saveChanges">
+                                            <Button
+                                                type="save"
+                                                variant="contained"
+                                                color="secondary"
+                                                style={{minWidth: "85px", minHeight:"35px"}}>
+                                                Save changes
+                                            </Button>
+                                        </section>
+                                    </form>
+                                </div>
+                            </Popup>
+                            </Box>
+                            <p><b>Gender: </b> {gender}</p>
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <KeyboardDatePicker
+                                label="Date of Birth"
+                                inputVariant="outlined"
+                                value={dob}
+                                onChange={changeDOB}
+                                format="dd/MM/yyyy"
+                                />
+                            </MuiPickersUtilsProvider>
                             </>
-                        }
+                        </div>
+                            <Box 
+                                boxShadow={4}
+                                borderRadius={5}
+                                style={{ padding: "15px", "margin-left": "6em", width:"25em", marginTop:"2em", marginLeft:"8.5em"}}>
+                                <Box display="flex" justifyContent="space-between">
+                                    <h3>Contact</h3>
+                                    <Popup trigger={<IconButton><Pen /></IconButton>} position="bottom center">
+                                        <div>
+                                            <form onSubmit={submitContact}>
+                                                <p>Edit Mobile</p>
+                                                <TextField
+                                                    id="newnotes"
+                                                    label="Edit Mobile"
+                                                    placeholder="Write new number here"
+                                                    multiline
+                                                    variant="outlined"
+                                                    color="secondary"
+                                                    fullWidth 
+                                                    onChange={e => setNumber(e.target.value)}
+                                                />
+                                                
+                                                <p>Edit Email</p>
+                                                <TextField
+                                                    id="newnotes"
+                                                    label="New Email"
+                                                    placeholder="Write new email here"
+                                                    multiline
+                                                    variant="outlined"
+                                                    color="secondary"
+                                                    fullWidth 
+                                                    onChange={e => setEmail(e.target.value)}
+                                                />
+                                                <br/>
+                                                <br/>
+                                                <section className="saveChanges">
+                                                    <Button
+                                                        type="save"
+                                                        variant="contained"
+                                                        color="secondary"
+                                                        style={{minWidth: "85px", minHeight:"35px"}}>
+                                                        Save changes
+                                                    </Button>
+                                                </section>
+                                            </form>
+                                        </div>
+
+                                    </Popup>
+                                </Box>
+                                <>
+                                <p><b>Mobile: </b> <span className="contactInfo">{pnumber}</span></p>
+                                <p><b>Email: </b> <span className="contactInfo">{pemail}</span></p> 
+                                </>    
+                            </Box>
                     </div>
-                    <Grid item spacing={4} style = {{position: "relative", right: "2.25%"}}>
+                </div>
+                <div style = {{"padding-top": "15px", margin: "8px"}}>          
+
+                    <div className="company-task">
+                    {/*Company info div */}
+                    <div className="company-info">
                         <Box 
                             boxShadow={4}
                             borderRadius={5}
-                            style={{ padding: "15px", margin: "10px", width:"25em", marginTop:"2em"}}>
-                            <Box display="flex" justifyContent="space-between">
-                                <h3>Contact</h3>
-                                <Popup trigger={<IconButton><Pen /></IconButton>} position="bottom center">
-                                    <div>
-                                        <p>Edit Mobile</p>
-                                        <TextField
-                                        id="newnotes"
-                                        label="Edit Mobile"
-                                        placeholder="Write new number here"
-                                        multiline
-                                        variant="outlined"
-                                        color="secondary"
-                                        fullWidth 
-                                        onChange={e => setNumber(e.target.value)}
-                                        />
-                                        
-                                        <p>Edit Email</p>
-                                        <TextField
-                                        id="newnotes"
-                                        label="New Email"
-                                        placeholder="Write new email here"
-                                        multiline
-                                        variant="outlined"
-                                        color="secondary"
-                                        fullWidth 
-                                        onChange={e => setEmail(e.target.value)}
-                                        />
-                                    </div>
+                            style={{ padding: "15px", width:"25em", marginRight:"2em", height:"15em"}}>
+                                <Box display="flex" justifyContent="space-between">
+                                     <h3>Company Information</h3>
+                                    <Popup trigger={<IconButton><Pen /></IconButton>} position="bottom center">
+                                        <div>
+                                            <form onSubmit={submitCompInfo}>
+                                                <p>Edit Name</p>
+                                                <TextField
+                                                    id="newnotes"
+                                                    label="New Name"
+                                                    placeholder="Write new name here"
+                                                    multiline
+                                                    variant="outlined"
+                                                    color="secondary"
+                                                    fullWidth 
+                                                    onChange={e => setName(e.target.value)}
+                                                />
+                                                <p>Edit Location</p>
+                                                <TextField
+                                                    id="newnotes"
+                                                    label="New Location"
+                                                    placeholder="Write new location here"
+                                                    multiline
+                                                    variant="outlined"
+                                                    color="secondary"
+                                                    fullWidth 
+                                                    onChange={e => setLocation(e.target.value)}
+                                                />
+                                                <p>Edit Position</p>
+                                                <TextField
+                                                    id="newnotes"
+                                                    label="New Position"
+                                                    placeholder="Write new position here"
+                                                    multiline
+                                                    variant="outlined"
+                                                    color="secondary"
+                                                    fullWidth 
+                                                    onChange={e => setPosition(e.target.value)}
+                                                />
+                                                <p>Edit Department</p>
+                                                <TextField
+                                                    id="newnotes"
+                                                    label="New Department"
+                                                    placeholder="Write new department here"
+                                                    multiline
+                                                    variant="outlined"
+                                                    color="secondary"
+                                                    fullWidth 
+                                                    onChange={e => setDepartment(e.target.value)}
+                                                />
+                                                <br/>
+                                                <br/>
+                                                <section className="saveChanges">
+                                                    <Button
+                                                        type="save"
+                                                        variant="contained"
+                                                        color="secondary"
+                                                        style={{minWidth: "85px", minHeight:"35px"}}>
+                                                        Save changes
+                                                    </Button>
+                                                </section>
+                                            </form>
+                                        </div>
 
-                                </Popup>
+                                    </Popup>
+                                    </Box>
+                                    <p><b>Name: </b> <span className="contactInfo">{pname}</span></p>
+                                    <p><b>Location: </b> <span className="contactInfo">{plocation}</span></p>
+                                    <p><b>Position: </b> <span className="contactInfo">{pposition}</span></p>
+                                    <p><b>Department: </b> <span className="contactInfo">{pdepartment}</span></p>
+                                </Box>
+                            
+                    </div>    
+                    
+                    {/*Task info */}
+                    <div className="task-info">    
+                            <Box 
+                                boxShadow={4}
+                                borderRadius={5}
+                                style={{ padding: "15px", width:"25em", height:"15em"}}>
+                                <Box display="flex" justifyContent="space-between">
+                                    <h3>Task Information</h3>
+                                    <Popup trigger={<IconButton><Pen /></IconButton>} position="bottom center">
+                                        <div>
+                                            <p>Edit Description</p>
+                                            <form onSubmit={submitTaskInfo}>
+                                                <TextField
+                                                    id="newnotes"
+                                                    label="New Description"
+                                                    placeholder="Write new description here"
+                                                    multiline
+                                                    variant="outlined"
+                                                    color="secondary"
+                                                    fullWidth 
+                                                    onChange={e => setDescription(e.target.value)}
+                                                />
+                                                    
+                                                <p>Edit Timeline</p>
+                                                <TextField
+                                                    id="newnotes"
+                                                    label="New Timeline"
+                                                    placeholder="Write new timeline here"
+                                                    multiline
+                                                    variant="outlined"
+                                                    color="secondary"
+                                                    fullWidth 
+                                                    onChange={e => setTimeline(e.target.value)}
+                                                />
+                                                <br/>
+                                                <br/>
+                                                <section className="saveChanges">
+                                                    <Button
+                                                        type="save"
+                                                        variant="contained"
+                                                        color="secondary"
+                                                        style={{minWidth: "85px", minHeight:"35px"}}>
+                                                        Save changes
+                                                    </Button>
+                                                </section>
+                                            </form>
+                                        </div>
+
+                                    </Popup>
+                                </Box>
+                            <p><b>High level description: </b> <span className="contactInfo">{pdescription}</span></p>
+                            <p><b>Timeline: </b> <span className="contactInfo">{ptimeline}</span></p>
                             </Box>
-                            {customer &&
-                            <>
-                            <p><b>Mobile: </b> <span className="contactInfo">{customer.phoneNumber}</span></p>
-                            <p><b>Email: </b> <span className="contactInfo">{customer.email}</span></p> 
-                            </>
-                            }     
-                        </Box>
-                    </Grid>
-                </Grid>
-
-                <Grid container
-                    direction="row"
-                    // justifyContent="space-between"
-                    alignItems="center"
-                >
-                    <Grid item spacing={5}>
-                        <Box 
-                            boxShadow={4}
-                            borderRadius={5}
-                            style={{ padding: "15px", margin: "8px", width:"25em", marginRight:"7.5em", height:"15em"}}>
-                            <Box display="flex" justifyContent="space-between">
-                                <h3>Company Information</h3>
-                                <Popup trigger={<IconButton><Pen /></IconButton>} position="bottom center">
-                                    <div>
-                                        <p>Edit Name</p>
-                                    <TextField
-                                        id="newnotes"
-                                        label="New Name"
-                                        placeholder="Write new name here"
-                                        multiline
-                                        variant="outlined"
-                                        color="secondary"
-                                        fullWidth 
-                                        onChange={e => setName(e.target.value)}
-                                        />
-                                        
-                                        <p>Edit Location</p>
-                                        <TextField
-                                        id="newnotes"
-                                        label="New Location"
-                                        placeholder="Write new location here"
-                                        multiline
-                                        variant="outlined"
-                                        color="secondary"
-                                        fullWidth 
-                                        onChange={e => setLocation(e.target.value)}
-                                        />
-                                        <p>Edit Position</p>
-                                        <TextField
-                                        id="newnotes"
-                                        label="New Position"
-                                        placeholder="Write new position here"
-                                        multiline
-                                        variant="outlined"
-                                        color="secondary"
-                                        fullWidth 
-                                        onChange={e => setPosition(e.target.value)}
-                                        />
-                                        <p>Edit Department</p>
-                                        <TextField
-                                        id="newnotes"
-                                        label="New Department"
-                                        placeholder="Write new department here"
-                                        multiline
-                                        variant="outlined"
-                                        color="secondary"
-                                        fullWidth 
-                                        onChange={e => setDepartment(e.target.value)}
-                                        />
-                                    </div>
-
-                                </Popup>
-                            </Box>
-                            {company &&
-                            <>
-                                <p><b>Name: </b> <span className="contactInfo">{company.name}</span></p>
-                                <p><b>Location: </b> <span className="contactInfo">{company.location}</span></p>
-                                <p><b>Position: </b> <span className="contactInfo">{company.position}</span></p>
-                                <p><b>Department: </b> <span className="contactInfo">{company.department}</span></p>
-                            </>
-                            }
-                        </Box>
-                    </Grid>
-                    <Grid item spacing={5}>
-                        <Box 
-                            boxShadow={4}
-                            borderRadius={5}
-                            style={{ padding: "15px", width:"25em", height:"15em"}}>
-                            <Box display="flex" justifyContent="space-between">
-                                <h3>Task Information</h3>
-                                <Popup trigger={<IconButton><Pen /></IconButton>} position="bottom center">
-                                    <div>
-                                        <p>Edit Description</p>
-                                    <TextField
-                                        id="newnotes"
-                                        label="New Description"
-                                        placeholder="Write new description here"
-                                        multiline
-                                        variant="outlined"
-                                        color="secondary"
-                                        fullWidth 
-                                        onChange={e => setDescription(e.target.value)}
-                                        />
-                                        
-                                        <p>Edit Timeline</p>
-                                        <TextField
-                                        id="newnotes"
-                                        label="New Timeline"
-                                        placeholder="Write new timeline here"
-                                        multiline
-                                        variant="outlined"
-                                        color="secondary"
-                                        fullWidth 
-                                        onChange={e => setTimeline(e.target.value)}
-                                        />
-                                    </div>
-
-                                </Popup>
-                            </Box>
-                        <p><b>High level description: </b> <span className="contactInfo">{customer && customer.description}</span></p>
-                        <p><b>Timeline: </b> <span className="contactInfo">{customer && customer.timeline}</span></p>
-                        </Box>
-                    </Grid>
-                </Grid>
+                        </div>
+                    </div>
+                </div>
                 <Grid container
                     direction="row"
                     justifyContent="space-between"
@@ -546,23 +703,35 @@ export default function Profile({props}) {
                         <Box 
                             boxShadow={4}
                             borderRadius={5}
-                            style={{ padding: "15px", margin: "8px" , width:"50vw", height:"10em", marginTop:"2em"}}>
+                            style={{ padding: "15px", margin: "8px" , width:"45vw", height:"10em", marginTop:"2em"}}>
                             <Box display="flex" justifyContent="space-between">
                                 <h3>Notes</h3>
                                 <Popup trigger={<IconButton><Pen /></IconButton>} position="bottom center">
                                     <div>
-                                    <TextField
-                                        id="newnotes"
-                                        label="Editing notes"
-                                        placeholder="Write new notes here"
-                                        multiline
-                                        variant="outlined"
-                                        color="secondary"
-                                        fullWidth 
-                                        onChange={e => setNotes(e.target.value)}
-                                        />
+                                        <form onSubmit={submitNotes}>
+                                        <TextField
+                                            id="newnotes"
+                                            label="Editing notes"
+                                            placeholder="Write new notes here"
+                                            multiline
+                                            variant="outlined"
+                                            color="secondary"
+                                            fullWidth 
+                                            onChange={e => setNotes(e.target.value)}
+                                            />
+                                            <br/>
+                                            <br/>
+                                            <section className="saveChanges">
+                                                <Button
+                                                    type="save"
+                                                    variant="contained"
+                                                    color="secondary"
+                                                    style={{minWidth: "85px", minHeight:"35px"}}>
+                                                    Save changes
+                                                </Button>
+                                            </section>
+                                        </form>
                                     </div>
-
                                 </Popup>
                             </Box>
                         <section class="notes">
@@ -574,7 +743,7 @@ export default function Profile({props}) {
                             variant="outlined"
                             color="secondary"
                             fullWidth 
-                            value={customer && customer.notes}
+                            value={pnotes}
                             />
                         </section>
                         </Box>

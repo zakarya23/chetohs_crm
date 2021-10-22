@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////
-// Author(s): Terry Tran, Zakarya Butt, Rebecca Ye
+// Author(s): Terry Tran, Zakarya Butt, Rebecca Ye, Nicholas Ang
 // Date Made: 09/09/2021
 //////////////////////////////////////////////////////////////
 
@@ -20,6 +20,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import NotificationsIcon from '@material-ui/icons/Notifications'; 
 import MenuIcon from '@material-ui/icons/Menu';
 import SortByAlphaIcon from '@material-ui/icons/SortByAlpha';
+import Badge from '@material-ui/core/Badge';
 
 function UserHome() {
 	const config = require('../Configuration/config.json');
@@ -27,6 +28,7 @@ function UserHome() {
 	// For storing customers and notificaions for meetings. 
 	const [customers, setCustomers] = useState();
 	const [meetings, setMeetings] = useState();
+	const [lastContacts, setLastContacts] = useState();
 	// For search
 	const [search, setSearch] = useState(false);  
 	const [words, setSearchWord] = useState();
@@ -41,8 +43,10 @@ function UserHome() {
 	const [medium, setMedium] = useState(false);
 	const [low, setLow] = useState(false);
 	// For sorting alphabetically
-	const [alpha, setAlpha] = useState(false); 
+	const [alpha, setAlpha] = useState(false);
 
+	const [notifications, setNotifications] = useState();
+	
 	const [anchorEl, setAnchorEl] = React.useState(null);
     const [anchorE2, setAnchorE2] = React.useState(null);
     const open = Boolean(anchorEl);
@@ -58,6 +62,39 @@ function UserHome() {
         setAnchorE2(null);
     };
 
+	const handleNotificationsOpen = (event) => {
+        setAnchorEl(event.currentTarget);
+		if (meetings) {
+			for (var i = 0; i < meetings.length; i++) {
+				var cust = meetings[i];
+				try {
+					axios.post(link + 'user/falseNotifyM/' + cust._id);
+				}
+				catch (err) {
+					if ((err)) return alert('check your connection');
+					throw err;
+				}
+			}
+		}
+		if (lastContacts) {
+			for (var i = 0; i < lastContacts.length; i++) {
+				var cust = lastContacts[i];
+				try {
+					axios.post(link + 'user/falseNotifyLC/' + cust._id);
+				}
+				catch (err) {
+					if ((err)) return alert('check your connection');
+					throw err;
+				}
+			}
+		}
+    };
+
+	const handleNotificationClose = () => {
+		setAnchorEl(null);
+		setNotifications(0);
+	}
+
     const handleMenu = (event) => {
         setAnchorE2(event.currentTarget);
     };
@@ -72,7 +109,6 @@ function UserHome() {
         e.preventDefault();
         window.location.href = '/edit_information';
     }
-
 
 	// If we detect a change in the search property then this is run.
 	useEffect(() => {
@@ -125,24 +161,89 @@ function UserHome() {
 
 	const getCustomers = () => {
 	  // Sends a request to the backend to get all customers
-	  axios.get(link + 'user/customers').then(res => {
-		  var data = res.data.customers; 
-		  setCustomers(data); 
-		  var meetings = [];
-		  for (var i = 0; i < data.length; i++) {
-			  var customer = data[i];
-			  if (customer.meeting) {
-				var meeting = {
-					"name": customer.firstName + " " + customer.familyName, 
-					"date": customer.meeting.date, 
-					"time": customer.meeting.time
+		axios.get(link + 'user/customers').then(res => {
+			var data = res.data.customers;
+			var notifications = 0;
+			setCustomers(data); 
+			var meetings = [];
+			var lastContacts = [];
+			for (var i = 0; i < data.length; i++) {
+				var customer = data[i];
+				if (customer.meeting) {
+					var mDate = new Date(customer.meeting)
+					var meeting = {
+						"_id": customer._id,
+						"name": customer.firstName + " " + customer.familyName,
+						"date": mDate.getDate() + '/' + (mDate.getMonth() + 1) + '/' + mDate.getFullYear(),
+						"hours": mDate.getHours(),
+						"minutes": mDate.getMinutes()
+					}
+					meetings.push(meeting);
+					if (customer.toNotifyM === true) {
+						notifications++;
+					}
 				}
-				meetings.push(meeting);
+				if (customer.lastContact) {
+					var toDate = new Date();
+					var lcDate = new Date(customer.lastContact);
+					var diffInDays = (toDate.getTime() - lcDate.getTime()) / (1000 * 3600 * 24);
+					var prio = customer.priority;
+					if (prio === "High") {
+						if (diffInDays >= 7) {
+							var lastContacted = {
+								"_id": customer._id,
+								"name": customer.firstName + " " + customer.familyName,
+								"priority": prio,
+								"lcDate": lcDate.getDate() + '/' + (lcDate.getMonth() + 1) + '/' + lcDate.getFullYear(),
+								"lcHours": lcDate.getHours(),
+								"lcMinutes": lcDate.getMinutes()
+							}
+							lastContacts.push(lastContacted);
+							if (customer.toNotifyLC === true) {
+								notifications++;
+							}
+						}
+					}
+					else if (prio === "Medium") {
+						if (diffInDays >= 14) {
+							var lastContacted = {
+								"_id": customer._id,
+								"name": customer.firstName + " " + customer.familyName,
+								"priority": prio,
+								"lcDate": lcDate.getDate() + '/' + (lcDate.getMonth() + 1) + '/' + lcDate.getFullYear(),
+								"lcHours": lcDate.getHours(),
+								"lcMinutes": lcDate.getMinutes()
+							}
+							lastContacts.push(lastContacted);
+							if (customer.toNotifyLC === true) {
+								notifications++;
+							}
+						}
+					}
+					else if (prio === "Low") {
+						if (diffInDays >= 28) {
+							var lastContacted = {
+								"_id": customer._id,
+								"name": customer.firstName + " " + customer.familyName,
+								"priority": prio,
+								"lcDate": lcDate.getDate() + '/' + (lcDate.getMonth() + 1) + '/' + lcDate.getFullYear(),
+								"lcHours": lcDate.getHours(),
+								"lcMinutes": lcDate.getMinutes()
+							}
+							lastContacts.push(lastContacted);
+							if (customer.toNotifyLC === true) {
+								notifications++;
+							}
+						}
+					}
 				}
-		  }
-		  setMeetings(meetings);
-	  }) 
+			}
+			setMeetings(meetings);
+			setLastContacts(lastContacts);
+			setNotifications(notifications);
+	  	})
 	}
+	setInterval(getCustomers, 30 * 60 * 1000);
 	
 	const searchWord = (e) => {
 		// Search will be true here.
@@ -245,13 +346,15 @@ function UserHome() {
                         <img class="header" src="/logo.png" alt="logo" width="207" height="55" />
                     </Box>
                     <IconButton>
-                        <NotificationsIcon onClick = {handleClick}/> 
+						<Badge color="secondary" badgeContent={notifications}>
+                        	<NotificationsIcon color="action" onClick = {handleNotificationsOpen}/>
+						</Badge>
                     </IconButton>
                     <Menu
                         id="basic-menu"
                         anchorEl={anchorEl}
                         open={open}
-                        onClose={handleClose}
+                        onClose={handleNotificationClose}
                         MenuListProps={{
                         'aria-labelledby': 'basic-button',
                         }}
@@ -259,16 +362,31 @@ function UserHome() {
                     >
 						{meetings && meetings.map(d => (
 							<>
-								<MenuItem onClick={handleClose}>
+								<MenuItem onClick={()=> window.location.href='/user/profile/' + d._id}>
 									<div className = "notifications">
-										<div className = "content"> Meeting with {d.name}, {d.time} on {d.date}</div>
+										<div className = "content"> Meeting with {d.name}, on {d.date},
+											at {String(d.hours).padStart(2, '0')}:{String(d.minutes).padStart(2, '0')} </div>
 										<div className = "divider">
 											<div className = "line" />
 										</div>
 									</div>
 								</MenuItem>
 							</>
-						 ))}
+						))}
+						{lastContacts && lastContacts.map(lc => (
+							<>
+								<MenuItem onClick={()=> window.location.href='/user/profile/' + lc._id}>
+									<div className = "notifications">
+										<div className = "content"> Last contacted {lc.priority} priority customer, {lc.name}, on {lc.lcDate},
+											at {String(lc.lcHours).padStart(2, '0')}:{String(lc.lcMinutes).padStart(2, '0')} </div>
+										<div className = "divider">
+											<div className = "line" />
+										</div>
+									</div>
+								</MenuItem>
+							</>
+						))}
+
                     </Menu>
                 </Toolbar>
             </AppBar>

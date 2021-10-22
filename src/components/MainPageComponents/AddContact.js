@@ -1,7 +1,7 @@
-////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 // Author(s): Zakarya Butt, Rebecca Ye, Nicholas Ang
 // Date Made: 26/09/2021
-////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 
 import TextField from '@material-ui/core/TextField';
 import Box from '@material-ui/core/Box';
@@ -47,7 +47,7 @@ export default function EditInfo() {
     const [addClientStatus, setAddClientStatus] = useState();
 
     const makeCustomer = () => {
-        // Phone number 10
+        // Phone number 1
         // Sends a request to the backend to make a new customer
         var clientFields =  firstName || familyName || dob || gender || number || email || priority || status || companyName || location | position | department; 
 

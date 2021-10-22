@@ -1,3 +1,8 @@
+//////////////////////////////////////////////////////////////
+// Author(s): Nicholas Ang
+// Date Made: 26/09/2021
+//////////////////////////////////////////////////////////////
+
 import React from "react";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from '@material-ui/lab/Alert';
